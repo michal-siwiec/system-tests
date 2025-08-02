@@ -52,7 +52,7 @@ jobs:
             docker compose -f ./docker-compose.yml up -d
           wait-on: 'http://localhost:3003/, http://localhost:3333/'
           wait-on-timeout: 120
-          command: npm run test:e2e
+          command: npm run tests:shop:e2e
           working-directory: budoman-frontend
       - name: Upload Cypress screenshots
         if: failure() && steps.cypress-tests.outcome == 'failure'

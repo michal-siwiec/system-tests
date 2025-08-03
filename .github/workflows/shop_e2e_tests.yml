@@ -1,5 +1,54 @@
-name: Run shop E2E tests # TODO: pass branches names for this to upload code not always from main
-on: workflow_call
+name: Run shop E2E tests
+on:
+  workflow_call:
+    inputs:
+      budoman-frontend_branch:
+        required: false
+        type: string
+        default: develop
+      budoman-backend_branch:
+        required: false
+        type: string
+        default: develop
+    secrets:
+      BUDOMAN_FRONTEND_API_URL:
+        required: true
+      BUDOMAN_FRONTEND_AWS_REGION:
+        required: true
+      BUDOMAN_FRONTEND_AWS_ACCESS_KEY_ID:
+        required: true
+      BUDOMAN_FRONTEND_AWS_SECRET_ACCESS_KEY:
+        required: true
+      BUDOMAN_FRONTEND_AWS_BUCKET:
+        required: true
+      BUDOMAN_BACKEND_AWS_REGION:
+        required: true
+      BUDOMAN_BACKEND_AWS_ACCESS_KEY_ID:
+        required: true
+      BUDOMAN_BACKEND_AWS_SECRET_ACCESS_KEY:
+        required: true
+      BUDOMAN_BACKEND_SMTP_PASSWORD:
+        required: true
+      BUDOMAN_BACKEND_SMTP_AUTHENTICATION:
+        required: true
+      BUDOMAN_BACKEND_DATABASE_HOST:
+        required: true
+      BUDOMAN_BACKEND_DATABASE_USER_NAME:
+        required: true
+      BUDOMAN_BACKEND_DATABASE_PASSWORD:
+        required: true
+      BUDOMAN_BACKEND_DATABASE_PORT:
+        required: true
+      BUDOMAN_BACKEND_REDIS_URL:
+        required: true
+      BUDOMAN_BACKEND_SCHEMA_REGISTRY_URL:
+        required: true
+      BUDOMAN_BACKEND_SIDEKIQ_PANEL_LOGIN:
+        required: true
+      BUDOMAN_BACKEND_SIDEKIQ_PANEL_PASSWORD:
+        required: true
+      BUDOMAN_BACKEND_ROLLBAR_ACCESS_TOKEN:
+        required: true
 jobs:
   run-e2e-tests:
     runs-on: ubuntu-latest
@@ -8,6 +57,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: budoman-frontend
+          ref: ${{ inputs.budoman-frontend_branch }}
       - name: Create .env file for frontend application
         working-directory: budoman-frontend
         run: |
@@ -23,6 +73,7 @@ jobs:
         with:
           repository: kiwi439/budoman-backend
           path: budoman-backend
+          ref: ${{ inputs.budoman-backend_branch }}
       - name: Create .env file for backend application
         working-directory: budoman-backend
         run: |
@@ -43,17 +94,25 @@ jobs:
           ROLLBAR_ACCESS_TOKEN=${{ secrets.BUDOMAN_BACKEND_ROLLBAR_ACCESS_TOKEN }}
           RAILS_ENV=test
           EOF
+      - name: Upload system tests repository
+        uses: actions/checkout@v3
+        with:
+          repository: kiwi439/budoman-system-tests
+          path: budoman-system-tests
+      - name: Install dependencies for system test repository
+        run: cd budoman-system-tests && npm install
       - name: Run Cypress tests
         id: cypress-tests
         uses: cypress-io/github-action@v6
         with:
           start: |
+            docker compose -f ../budoman-frontend/docker-compose.yml up -d
             docker compose -f ../budoman-backend/docker-compose.yml up -d
-            docker compose -f ./docker-compose.yml up -d
           wait-on: 'http://localhost:3003/, http://localhost:3333/'
           wait-on-timeout: 120
           command: npm run tests:shop:e2e
-          working-directory: budoman-frontend
+          working-directory: budoman-system-tests
+          install: false
       - name: Upload Cypress screenshots
         if: failure() && steps.cypress-tests.outcome == 'failure'
         uses: actions/upload-artifact@v4

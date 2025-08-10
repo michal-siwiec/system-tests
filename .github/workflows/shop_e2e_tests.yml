@@ -71,6 +71,7 @@ jobs:
         env:
           SIDEKIQ_PANEL_LOGIN: ${{ secrets.BUDOMAN_BACKEND_SIDEKIQ_PANEL_LOGIN }}
           SIDEKIQ_PANEL_PASSWORD: ${{ secrets.BUDOMAN_BACKEND_SIDEKIQ_PANEL_PASSWORD }}
+          CI: true
         with:
           start: |
             docker compose -f ../budoman-frontend/docker-compose.yml up -d

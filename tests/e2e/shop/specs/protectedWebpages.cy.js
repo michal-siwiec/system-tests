@@ -14,15 +14,17 @@ describe('Protected webpages', () => {
         });
     });
 
-    it('allows to visit page when auth data are correct', () => {
-      cy.request({
-        url: `${Cypress.config('apiUrl')}/sidekiq`,
-        failOnStatusCode: false,
-        auth: { username: Cypress.env('SIDEKIQ_PANEL_LOGIN'), password: Cypress.env('SIDEKIQ_PANEL_PASSWORD') }
+    Cypress.env('CI') ? (
+      it('allows to visit page when auth data are correct', () => {
+        cy.request({
+          url: `${Cypress.config('apiUrl')}/sidekiq`,
+          failOnStatusCode: false,
+          auth: { username: Cypress.env('SIDEKIQ_PANEL_LOGIN'), password: Cypress.env('SIDEKIQ_PANEL_PASSWORD') }
+        })
+          .then((response) => {
+            expect(response.status).to.eq(200);
+          });
       })
-        .then((response) => {
-          expect(response.status).to.eq(200);
-        });
-    });
+    ) : null
   });
 });

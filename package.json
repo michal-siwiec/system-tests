@@ -4,7 +4,8 @@
   "description": "This repo contains a E2E tests which touches more than one application",
   "main": "index.js",
   "scripts": {
-    "tests:shop:e2e": "cypress run --config-file tests/e2e/shop/cypress.config.js"
+    "tests:shop:e2e": "cypress run --config-file tests/e2e/shop/cypress.config.js --spec tests/e2e/shop/specs/protectedWebpages.cy.js",
+    "tests:shop:e2e:open": "cypress open --config-file tests/e2e/shop/cypress.config.js"
   },
   "keywords": [],
   "author": "",

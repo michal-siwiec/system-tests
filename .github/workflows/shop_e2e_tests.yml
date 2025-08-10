@@ -11,43 +11,17 @@ on:
         type: string
         default: develop
     secrets:
-      BUDOMAN_FRONTEND_API_URL:
-        required: true
-      BUDOMAN_FRONTEND_AWS_REGION:
-        required: true
       BUDOMAN_FRONTEND_AWS_ACCESS_KEY_ID:
         required: true
       BUDOMAN_FRONTEND_AWS_SECRET_ACCESS_KEY:
-        required: true
-      BUDOMAN_FRONTEND_AWS_BUCKET:
-        required: true
-      BUDOMAN_BACKEND_AWS_REGION:
         required: true
       BUDOMAN_BACKEND_AWS_ACCESS_KEY_ID:
         required: true
       BUDOMAN_BACKEND_AWS_SECRET_ACCESS_KEY:
         required: true
-      BUDOMAN_BACKEND_SMTP_PASSWORD:
-        required: true
-      BUDOMAN_BACKEND_SMTP_AUTHENTICATION:
-        required: true
-      BUDOMAN_BACKEND_DATABASE_HOST:
-        required: true
-      BUDOMAN_BACKEND_DATABASE_USER_NAME:
-        required: true
-      BUDOMAN_BACKEND_DATABASE_PASSWORD:
-        required: true
-      BUDOMAN_BACKEND_DATABASE_PORT:
-        required: true
-      BUDOMAN_BACKEND_REDIS_URL:
-        required: true
-      BUDOMAN_BACKEND_SCHEMA_REGISTRY_URL:
-        required: true
       BUDOMAN_BACKEND_SIDEKIQ_PANEL_LOGIN:
         required: true
       BUDOMAN_BACKEND_SIDEKIQ_PANEL_PASSWORD:
-        required: true
-      BUDOMAN_BACKEND_ROLLBAR_ACCESS_TOKEN:
         required: true
 jobs:
   run-e2e-tests:
@@ -56,17 +30,17 @@ jobs:
       - name: Upload frontend repository
         uses: actions/checkout@v3
         with:
+          repository: kiwi439/budoman-front
           path: budoman-frontend
           ref: ${{ inputs.budoman-frontend_branch }}
       - name: Create .env file for frontend application
         working-directory: budoman-frontend
         run: |
           cat <<EOF > .env
-          API_URL=${{ secrets.BUDOMAN_FRONTEND_API_URL }}
-          AWS_REGION=${{ secrets.BUDOMAN_FRONTEND_AWS_REGION }}
+          API_URL=http://localhost:3333
           AWS_ACCESS_KEY_ID=${{ secrets.BUDOMAN_FRONTEND_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY=${{ secrets.BUDOMAN_FRONTEND_AWS_SECRET_ACCESS_KEY }}
-          AWS_BUCKET=${{ secrets.BUDOMAN_FRONTEND_AWS_BUCKET }}
+          AWS_BUCKET=budoman-development
           EOF
       - name: Upload backend repository
         uses: actions/checkout@v3
@@ -78,20 +52,10 @@ jobs:
         working-directory: budoman-backend
         run: |
           cat <<EOF > .env
-          AWS_REGION=${{ secrets.BUDOMAN_BACKEND_AWS_REGION }}
           AWS_ACCESS_KEY_ID=${{ secrets.BUDOMAN_BACKEND_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY=${{ secrets.BUDOMAN_BACKEND_AWS_SECRET_ACCESS_KEY }}
-          SMTP_PASSWORD=${{ secrets.BUDOMAN_BACKEND_SMTP_PASSWORD }}
-          SMTP_AUTHENTICATION=${{ secrets.BUDOMAN_BACKEND_SMTP_AUTHENTICATION }}
-          DATABASE_HOST=${{ secrets.BUDOMAN_BACKEND_DATABASE_HOST }}
-          DATABASE_USER_NAME=${{ secrets.BUDOMAN_BACKEND_DATABASE_USER_NAME }}
-          DATABASE_PASSWORD=${{ secrets.BUDOMAN_BACKEND_DATABASE_PASSWORD }}
-          DATABASE_PORT=${{ secrets.BUDOMAN_BACKEND_DATABASE_PORT }}
-          REDIS_URL=${{ secrets.BUDOMAN_BACKEND_REDIS_URL }}
-          SCHEMA_REGISTRY_URL=${{ secrets.BUDOMAN_BACKEND_SCHEMA_REGISTRY_URL }}
           SIDEKIQ_PANEL_LOGIN=${{ secrets.BUDOMAN_BACKEND_SIDEKIQ_PANEL_LOGIN }}
           SIDEKIQ_PANEL_PASSWORD=${{ secrets.BUDOMAN_BACKEND_SIDEKIQ_PANEL_PASSWORD }}
-          ROLLBAR_ACCESS_TOKEN=${{ secrets.BUDOMAN_BACKEND_ROLLBAR_ACCESS_TOKEN }}
           RAILS_ENV=test
           EOF
       - name: Upload system tests repository
@@ -104,6 +68,9 @@ jobs:
       - name: Run Cypress tests
         id: cypress-tests
         uses: cypress-io/github-action@v6
+        env:
+          SIDEKIQ_PANEL_LOGIN: ${{ secrets.BUDOMAN_BACKEND_SIDEKIQ_PANEL_LOGIN }}
+          SIDEKIQ_PANEL_PASSWORD: ${{ secrets.BUDOMAN_BACKEND_SIDEKIQ_PANEL_PASSWORD }}
         with:
           start: |
             docker compose -f ../budoman-frontend/docker-compose.yml up -d
@@ -112,10 +79,9 @@ jobs:
           wait-on-timeout: 120
           command: npm run tests:shop:e2e
           working-directory: budoman-system-tests
-          install: false
       - name: Upload Cypress screenshots
         if: failure() && steps.cypress-tests.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
-          path: budoman-frontend/tests/e2e/screenshots
+          path: budoman-system-tests/tests/e2e/shop/screenshots

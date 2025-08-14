@@ -13,7 +13,8 @@ module.exports = defineConfig({
     apiUrl: `${HOST}:3333`,
     env: {
       sidekiqPanelLogin: process.env.SIDEKIQ_PANEL_LOGIN,
-      sidekiqPanelPassword: process.env.SIDEKIQ_PANEL_PASSWORD
+      sidekiqPanelPassword: process.env.SIDEKIQ_PANEL_PASSWORD,
+      CI: process.env.CI || false
     }
   }
 });

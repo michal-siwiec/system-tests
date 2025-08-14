@@ -19,7 +19,7 @@ describe('Protected webpages', () => {
         cy.request({
           url: `${Cypress.config('apiUrl')}/sidekiq`,
           failOnStatusCode: false,
-          auth: { username: Cypress.env('SIDEKIQ_PANEL_LOGIN'), password: Cypress.env('SIDEKIQ_PANEL_PASSWORD') }
+          auth: { username: Cypress.env('sidekiqPanelLogin'), password: Cypress.env('sidekiqPanelPassword') }
         })
           .then((response) => {
             expect(response.status).to.eq(200);

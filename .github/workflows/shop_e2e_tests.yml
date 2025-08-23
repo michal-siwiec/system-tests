@@ -30,11 +30,11 @@ jobs:
       - name: Upload frontend repository
         uses: actions/checkout@v3
         with:
-          repository: kiwi439/budoman-front
-          path: budoman-frontend
+          repository: michal-siwiec/frontend
+          path: frontend
           ref: ${{ inputs.budoman-frontend_branch }}
       - name: Create .env file for frontend application
-        working-directory: budoman-frontend
+        working-directory: frontend
         run: |
           cat <<EOF > .env
           API_URL=http://localhost:3333
@@ -45,11 +45,11 @@ jobs:
       - name: Upload backend repository
         uses: actions/checkout@v3
         with:
-          repository: kiwi439/budoman-backend
-          path: budoman-backend
+          repository: michal-siwiec/backend
+          path: backend
           ref: ${{ inputs.budoman-backend_branch }}
       - name: Create .env file for backend application
-        working-directory: budoman-backend
+        working-directory: backend
         run: |
           cat <<EOF > .env
           AWS_ACCESS_KEY_ID=${{ secrets.BUDOMAN_BACKEND_AWS_ACCESS_KEY_ID }}
@@ -61,10 +61,10 @@ jobs:
       - name: Upload system tests repository
         uses: actions/checkout@v3
         with:
-          repository: kiwi439/budoman-system-tests
-          path: budoman-system-tests
+          repository: michal-siwiec/system-tests
+          path: system-tests
       - name: Install dependencies for system test repository
-        run: cd budoman-system-tests && npm install
+        run: cd system-tests && npm install
       - name: Run Cypress tests
         id: cypress-tests
         uses: cypress-io/github-action@v6
@@ -74,15 +74,15 @@ jobs:
           CI: true
         with:
           start: |
-            docker compose -f ../budoman-frontend/docker-compose.yml up -d
-            docker compose -f ../budoman-backend/docker-compose.yml up -d
+            docker compose -f ../frontend/docker-compose.yml up -d
+            docker compose -f ../backend/docker-compose.yml up -d
           wait-on: 'http://localhost:3003/, http://localhost:3333/'
           wait-on-timeout: 120
           command: npm run tests:shop:e2e
-          working-directory: budoman-system-tests
+          working-directory: system-tests
       - name: Upload Cypress screenshots
         if: failure() && steps.cypress-tests.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
-          path: budoman-system-tests/tests/e2e/shop/screenshots
+          path: system-tests/tests/e2e/shop/screenshots

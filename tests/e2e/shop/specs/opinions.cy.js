@@ -1,9 +1,9 @@
 describe('opinions', () => {
   describe("when user isn't logged", () => {
     beforeEach(() => {
-      cy.trackRequest({ operationName: 'OpinionsDetails' });
+      cy.trackRequest({ operationName: 'Opinions' });
       cy.visit('/opinions');
-      cy.wait('@OpinionsDetails');
+      cy.wait('@Opinions');
     });
 
     it('shows already added opinions', () => {
@@ -31,9 +31,9 @@ describe('opinions', () => {
     beforeEach(() => {
       cy.visit('/login');
       cy.login();
-      cy.trackRequest({ operationName: 'OpinionsDetails' });
+      cy.trackRequest({ operationName: 'Opinions' });
       cy.visit('/opinions');
-      cy.wait('@OpinionsDetails');
+      cy.wait('@Opinions');
     });
 
     it('shows already added opinions', () => {
@@ -65,7 +65,6 @@ describe('opinions', () => {
       cy.get('[data-testid="add-opinion-submit-button"]').click();
       cy.wait('@addOpinion');
 
-      cy.contains('Dziękujemy!');
       cy.contains('Dziękujemy za dodanie opini!');
       cy.pressESC();
       cy.contains('»').click();

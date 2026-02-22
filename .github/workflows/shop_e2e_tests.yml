@@ -30,7 +30,7 @@ jobs:
       - name: Upload frontend repository
         uses: actions/checkout@v3
         with:
-          repository: michal-siwiec/frontend
+          repository: kiwi439/frontend
           path: frontend
           ref: ${{ inputs.budoman-frontend_branch }}
       - name: Create .env file for frontend application
@@ -45,7 +45,7 @@ jobs:
       - name: Upload backend repository
         uses: actions/checkout@v3
         with:
-          repository: michal-siwiec/backend
+          repository: kiwi439/backend
           path: backend
           ref: ${{ inputs.budoman-backend_branch }}
       - name: Create .env file for backend application
@@ -61,7 +61,7 @@ jobs:
       - name: Upload system tests repository
         uses: actions/checkout@v3
         with:
-          repository: michal-siwiec/system-tests
+          repository: kiwi439/system-tests
           path: system-tests
       - name: Install dependencies for system test repository
         run: cd system-tests && npm install

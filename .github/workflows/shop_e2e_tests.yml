@@ -11,6 +11,8 @@ on:
         type: string
         default: develop
     secrets:
+      E2E_READ_REPOSITORIES_TOKEN:
+        required: true
       BUDOMAN_FRONTEND_AWS_ACCESS_KEY_ID:
         required: true
       BUDOMAN_FRONTEND_AWS_SECRET_ACCESS_KEY:
@@ -33,6 +35,7 @@ jobs:
           repository: kiwi439/frontend
           path: frontend
           ref: ${{ inputs.budoman-frontend_branch }}
+          token: ${{ secrets.E2E_READ_REPOSITORIES_TOKEN }}
       - name: Create .env file for frontend application
         working-directory: frontend
         run: |
@@ -48,6 +51,7 @@ jobs:
           repository: kiwi439/backend
           path: backend
           ref: ${{ inputs.budoman-backend_branch }}
+          token: ${{ secrets.E2E_READ_REPOSITORIES_TOKEN }}
       - name: Create .env file for backend application
         working-directory: backend
         run: |
@@ -63,6 +67,7 @@ jobs:
         with:
           repository: kiwi439/system-tests
           path: system-tests
+          token: ${{ secrets.E2E_READ_REPOSITORIES_TOKEN }}
       - name: Install dependencies for system test repository
         run: cd system-tests && npm install
       - name: Run Cypress tests

@@ -87,11 +87,22 @@ jobs:
           working-directory: system-tests
       - name: Show Docker logs on failure
         if: failure() && steps.cypress-tests.outcome == 'failure'
+        working-directory: system-tests
         run: |
+          echo "=== All containers (docker ps -a) ==="
+          docker ps -a || true
+          echo ""
+          echo "=== Frontend compose project status ==="
+          docker compose -f ../frontend/docker-compose.yml ps -a || true
+          echo ""
+          echo "=== Backend compose project status ==="
+          docker compose -f ../backend/docker-compose.yml ps -a || true
+          echo ""
           echo "=== Frontend container logs ==="
-          docker compose -f frontend/docker-compose.yml logs || true
+          docker compose -f ../frontend/docker-compose.yml logs || true
+          echo ""
           echo "=== Backend container logs ==="
-          docker compose -f backend/docker-compose.yml logs || true
+          docker compose -f ../backend/docker-compose.yml logs || true
         continue-on-error: true
       - name: Upload Cypress screenshots
         if: failure() && steps.cypress-tests.outcome == 'failure'

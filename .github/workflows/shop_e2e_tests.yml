@@ -70,6 +70,31 @@ jobs:
           token: ${{ secrets.E2E_READ_REPOSITORIES_TOKEN }}
       - name: Install dependencies for system test repository
         run: cd system-tests && npm install
+      - name: Start frontend and backend containers
+        id: start-containers
+        working-directory: system-tests
+        run: |
+          docker compose -f ../frontend/docker-compose.yml up -d
+          docker compose -f ../backend/docker-compose.yml up -d
+      - name: Show Docker state and logs when start fails
+        if: failure() && steps.start-containers.outcome == 'failure'
+        working-directory: system-tests
+        run: |
+          echo "=== All containers (docker ps -a) ==="
+          docker ps -a || true
+          echo ""
+          echo "=== Frontend compose project status ==="
+          docker compose -f ../frontend/docker-compose.yml ps -a || true
+          echo ""
+          echo "=== Backend compose project status ==="
+          docker compose -f ../backend/docker-compose.yml ps -a || true
+          echo ""
+          echo "=== Frontend container logs ==="
+          docker compose -f ../frontend/docker-compose.yml logs || true
+          echo ""
+          echo "=== Backend container logs ==="
+          docker compose -f ../backend/docker-compose.yml logs || true
+        continue-on-error: true
       - name: Run Cypress tests
         id: cypress-tests
         uses: cypress-io/github-action@v6
@@ -78,11 +103,8 @@ jobs:
           SIDEKIQ_PANEL_PASSWORD: ${{ secrets.BUDOMAN_BACKEND_SIDEKIQ_PANEL_PASSWORD }}
           CI: true
         with:
-          start: |
-            docker compose -f ../frontend/docker-compose.yml up -d
-            docker compose -f ../backend/docker-compose.yml up -d
           wait-on: 'http://localhost:3003/, http://localhost:3333/'
-          wait-on-timeout: 120
+          wait-on-timeout: 300
           command: npm run tests:shop:e2e
           working-directory: system-tests
       - name: Show Docker logs on failure

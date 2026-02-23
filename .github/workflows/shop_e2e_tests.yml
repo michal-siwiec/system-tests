@@ -85,6 +85,14 @@ jobs:
           wait-on-timeout: 120
           command: npm run tests:shop:e2e
           working-directory: system-tests
+      - name: Show Docker logs on failure
+        if: failure() && steps.cypress-tests.outcome == 'failure'
+        run: |
+          echo "=== Frontend container logs ==="
+          docker compose -f frontend/docker-compose.yml logs || true
+          echo "=== Backend container logs ==="
+          docker compose -f backend/docker-compose.yml logs || true
+        continue-on-error: true
       - name: Upload Cypress screenshots
         if: failure() && steps.cypress-tests.outcome == 'failure'
         uses: actions/upload-artifact@v4

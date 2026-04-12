@@ -49,4 +49,11 @@ describe('Presenting producs', () => {
     selectSpecifiedGroupOfProducts('Strefa fundamentu');
     testContentPresence({ header: 'Produkty z kategori "Strefa fundamentu"', productTitles: ['Bloczek Termalika', 'Syropian fundamentowy 15 cm', 'Syropian fundamentowy 16 cm', 'Syropian fundamentowy 1 cm7', 'Folia kubełkowa'] });
   });
+
+  it("presents product as disabled when available quantity is 0", () => {
+    selectSpecifiedGroupOfProducts('Strefa dachu');
+    cy.contains('[data-testid="product-container"]', 'Taśma kalenicowa')
+      .should('be.visible')
+      .and('contain.text', 'Produkt niedostępny');
+  });
 });

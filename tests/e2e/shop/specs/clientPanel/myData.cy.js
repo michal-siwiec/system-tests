@@ -32,7 +32,9 @@ describe('Client details', () => {
 
     cy.wait('@updateUserDetails');
 
+    cy.contains('Dane osobowe zostały zaktualizowane!').should('be.visible');
     cy.pressESC();
+    cy.contains('Dane osobowe zostały zaktualizowane!').should('not.exist');
     cy.goToPromotedProductsPage();
     cy.goToClientPanel();
 

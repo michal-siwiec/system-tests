@@ -3,7 +3,9 @@ describe('Order history', () => {
     cy.visit('/');
     cy.goToLoginPage();
     cy.login();
+    cy.trackRequest({ operationName: 'ProductsDetails' });
     cy.contains('Strefa dachu').click();
+    cy.wait('@ProductsDetails');
     cy.addProductToBasket({ productName: 'Mocownik łaty kominiarskiej', quantity: '2' });
     cy.addProductToBasket({ productName: 'Kratka zabezpieczająca przed ptactwem', quantity: '5' });
     cy.goToBasket()
@@ -31,7 +33,9 @@ describe('Order history', () => {
       cy.contains('Data zakupu').should('be.visible');
     });
 
+    cy.trackRequest({ operationName: 'ProductsDetails' });
     cy.contains('Chemia budowlana').click();
+    cy.wait('@ProductsDetails');
     cy.addProductToBasket({ productName: 'Tynk nanosilikonowy', quantity: '2' });
     cy.addProductToBasket({ productName: 'Klej do styropianu', quantity: '1' });
     cy.addProductToBasket({ productName: 'Klej do dociepleń', quantity: '3' });

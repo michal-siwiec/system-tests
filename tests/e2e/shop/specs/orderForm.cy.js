@@ -216,17 +216,10 @@ describe('Order form', () => {
     });
 
     it('redirects to payment page after submitting order', () => {
-      const paymentUrl = '/stripe-checkout-mock';
-
-      cy.intercept('POST', '/graphql', (req) => {
-        if (req.body.operationName === 'addOrder') {
-          req.reply({ statusCode: 200, body: { data: { paymentUrl } } });
-        }
-      }).as('addOrder');
-
+      cy.mockRequest({ operationName: 'addOrder', responseData: { paymentUrl: '/stripe-checkout-mock' } });
       cy.contains('Kupuje i płacę').click();
       cy.wait('@addOrder');
-      cy.location('pathname').should('eq', paymentUrl);
+      cy.location('pathname').should('eq', '/stripe-checkout-mock');
     });
   });
 });

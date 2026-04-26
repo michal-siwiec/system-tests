@@ -216,10 +216,10 @@ describe('Order form', () => {
     });
 
     it('redirects to payment page after submitting order', () => {
-      cy.mockRequest({ operationName: 'addOrder', responseData: { paymentUrl: '/stripe-checkout-mock' } });
+      cy.overridePaymentRedirectUrl();
       cy.contains('Kupuje i płacę').click();
       cy.wait('@addOrder');
-      cy.location('pathname').should('eq', '/stripe-checkout-mock');
+      cy.location('pathname').should('eq', '/');
     });
   });
 });

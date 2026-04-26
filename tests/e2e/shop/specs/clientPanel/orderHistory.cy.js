@@ -15,7 +15,7 @@ describe('Order history', () => {
     cy.contains('Dalej').click();
     cy.contains('Dalej').click();
 
-    cy.trackRequest({ operationName: 'addOrder' });
+    cy.overridePaymentRedirectUrl();
     cy.contains('Kupuje i płacę').click();
     cy.wait('@addOrder');
 
@@ -46,7 +46,7 @@ describe('Order history', () => {
     cy.contains('Dalej').click();
     cy.contains('Dalej').click();
 
-    cy.trackRequest({ operationName: 'addOrder' });
+    cy.overridePaymentRedirectUrl();
     cy.contains('Kupuje i płacę').click();
     cy.wait('@addOrder');
 

@@ -102,11 +102,14 @@ Cypress.Commands.add('trackRequest', ({ operationName, aliasName = operationName
   });
 });
 
-Cypress.Commands.add('mockRequest', ({ operationName, responseData, aliasName = operationName, statusCode = 200 } = {}) => {
+Cypress.Commands.add('overridePaymentRedirectUrl', () => {
   cy.intercept('POST', '/graphql', (req) => {
-    if (req.body.operationName === operationName) {
-      req.alias = aliasName;
-      req.reply({ statusCode, body: { data: responseData } });
+    if (req.body.operationName === 'addOrder') {
+      req.alias = 'addOrder';
+
+      req.continue((res) => {
+        res.body.data.paymentUrl = '/';
+      });
     }
   });
 });

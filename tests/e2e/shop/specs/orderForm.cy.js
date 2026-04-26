@@ -169,23 +169,13 @@ describe('Order form', () => {
       cy.contains('Dalej').click();
     });
 
-    it('renders proper content and selects traditional transfer option', () => {
-      cy.contains('Płatność przy odbiorze').should('exist');
-      cy.contains('Przelew tradycyjny').should('exist');
-
-      cy.get('[data-testid="payment-on-delivery-checkbox"]').should('not.be.checked');
-      cy.get('[data-testid="traditional-transfer-checkbox"]').should('be.checked');
-
-      cy.get('[data-testid="payment-on-delivery-checkbox"]').check();
-
-      cy.get('[data-testid="payment-on-delivery-checkbox"]').should('be.checked');
-      cy.get('[data-testid="traditional-transfer-checkbox"]').should('not.be.checked');
+    it('renders available payment options', () => {
+      cy.contains('Płatność Stripe').should('exist');
+      cy.get('[data-testid="stripe-payment-checkbox"]').should('be.checked');
     });
   });
 
   describe('fourth step', () => {
-    let changePaymentMethodToPaymentOnDelivery = false;
-
     beforeEach(() => {
       cy.visit('/login');
       cy.login({ email: 'andrzej123@gmail.com', password: '1234Hbjkadasd' });
@@ -195,11 +185,6 @@ describe('Order form', () => {
       cy.contains('Kontynuuj zakupy').click();
       cy.contains('Dalej').click();
       cy.contains('Dalej').click();
-
-      if (changePaymentMethodToPaymentOnDelivery) {
-        cy.get('[data-testid="payment-on-delivery-checkbox"]').check();
-      };
-
       cy.contains('Dalej').click();
     });
 
@@ -230,81 +215,11 @@ describe('Order form', () => {
       });
     });
 
-    describe('submitting order', () => {
-      beforeEach(() => {
-        cy.trackRequest({ operationName: 'addOrder' });
-        cy.contains('Kupuje i płacę').click();
-        cy.wait('@addOrder');
-      });
-
-      it('successfully creates order when payment way is traditional-transfer', () => {
-        cy.contains('Dziękujemy za dokonanie zakupu!').should('be.visible');
-        cy.contains('Pobierz fakturę w formacie PDF').should('be.visible');
-        cy.contains('Prosimy o dokonanie płatności według poniszych danych').should('be.visible');
-
-        cy.get('.thank-you-page__transfer-info-wrapper').within(() => {
-          cy.get("li").eq(0).within(() => {
-            cy.contains('Kwota do zapłaty:').should('be.visible');
-            cy.contains('831.94 zł').should('be.visible');
-          });
-
-          cy.get("li").eq(1).within(() => {
-            cy.contains('Numer konta:').should('be.visible');
-            cy.contains('39 1240 6960 4539 1123 2002 9161').should('be.visible');
-          });
-
-          cy.get("li").eq(2).within(() => {
-            cy.contains('Tytuł przelewu:').should('be.visible');
-            cy.contains(/^Zamówienie [0-9a-f\-]{36} - Budoman$/i).should('be.visible');
-          });
-
-          cy.get("li").eq(3).within(() => {
-            cy.contains('Nazwa odbiorcy:').should('be.visible');
-            cy.contains('Budoman').should('be.visible');
-          });
-
-          cy.get("li").eq(4).within(() => {
-            cy.contains('Adres odbiorcy:').should('be.visible');
-            cy.contains('Żywiec 34-300, Beskidzka 50').should('be.visible');
-          });
-        });
-
-        cy.intercept('GET', '**/users/**/invoices/**.pdf').as('getInvoiceRequest');
-        cy.contains('Pobierz fakturę w formacie PDF').click();
-        cy.wait('@getInvoiceRequest').then(({ request }) => {
-          const url = request.url;
-          const match = url.match(/invoices\/([a-f0-9\-]+)\.pdf$/);
-          const invoiceId = match[1];
-
-          cy.readFile(`tests/e2e/shop/downloads/Faktura za zamówienie_ ${invoiceId}.pdf`, 'binary').should('exist');
-        });
-      });
-
-      describe('when payment method is is payment-on-delivery', () => {
-        before(() => {
-          changePaymentMethodToPaymentOnDelivery = true;
-        });
-
-        after(() => {
-          changePaymentMethodToPaymentOnDelivery = false;
-        })
-
-        it('successfully creates order', () => {
-          cy.contains('Dziękujemy za dokonanie zakupu!').should('be.visible');
-          cy.contains('Pobierz fakturę w formacie PDF').should('be.visible');
-          cy.contains('Prosimy o dokonanie płatności według poniszych danych').should('not.exist');
-
-          cy.intercept('GET', '**/users/**/invoices/**.pdf').as('getInvoiceRequest');
-          cy.contains('Pobierz fakturę w formacie PDF').click();
-          cy.wait('@getInvoiceRequest').then(({ request }) => {
-            const url = request.url;
-            const match = url.match(/invoices\/([a-f0-9\-]+)\.pdf$/);
-            const invoiceId = match[1];
-
-            cy.readFile(`tests/e2e/shop/downloads/Faktura za zamówienie_ ${invoiceId}.pdf`, 'binary').should('exist');
-          });
-        });
-      });
+    it('redirects to payment page after submitting order', () => {
+      cy.overridePaymentRedirectUrl();
+      cy.contains('Kupuje i płacę').click();
+      cy.wait('@addOrder');
+      cy.location('pathname').should('eq', '/');
     });
   });
 });

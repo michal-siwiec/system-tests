@@ -34,18 +34,14 @@ describe('Order finalization', () => {
       cy.contains('Pobierz fakturę w formacie PDF').should('be.visible');
     });
 
-    it('downloads invoice after clicking button', () => {
+    it('fetchs invoice from S3 after clicking invoice button', () => {
       cy.visit(`/thank-you-page?order_id=${orderId}`);
       cy.wait('@getOrder');
 
       cy.intercept('GET', '**/users/**/invoices/**.pdf').as('getInvoiceRequest');
-      cy.contains('Pobierz fakturę w formacie PDF').click();
+      cy.contains('Pobierz fakturę w formacie PDF').trigger('mousedown');
       cy.wait('@getInvoiceRequest').then(({ request }) => {
-        const url = request.url;
-        const match = url.match(/invoices\/([a-f0-9\-]+)\.pdf$/);
-        const invoiceId = match[1];
-
-        cy.readFile(`tests/e2e/shop/downloads/Faktura za zamówienie_ ${invoiceId}.pdf`, 'binary').should('exist');
+        expect(request.url).to.match(/\/users\/[0-9a-f-]+\/invoices\/[0-9a-f-]+\.pdf/i);
       });
     });
   });

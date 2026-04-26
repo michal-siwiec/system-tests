@@ -71,6 +71,7 @@ Cypress.Commands.add('submitOrder', () => {
   cy.addProductToBasket({ productName: 'Grunt głęboko penetrujący', quantity: '4' });
   cy.goToBasket();
   cy.contains('Kontynuuj zakupy').click();
+  cy.fillFirstOrderStep();
   cy.contains('Dalej').click();
   cy.contains('Dalej').click();
   cy.contains('Dalej').click();

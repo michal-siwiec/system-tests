@@ -64,6 +64,21 @@ Cypress.Commands.add('fillFirstOrderStep', () => {
   });
 });
 
+Cypress.Commands.add('submitOrder', () => {
+  cy.visit('/login');
+  cy.login({ email: 'andrzej123@gmail.com', password: '1234Hbjkadasd' });
+  cy.addProductToBasket({ productName: 'Tynk akrylowy', quantity: '1' });
+  cy.addProductToBasket({ productName: 'Grunt głęboko penetrujący', quantity: '4' });
+  cy.goToBasket();
+  cy.contains('Kontynuuj zakupy').click();
+  cy.contains('Dalej').click();
+  cy.contains('Dalej').click();
+  cy.contains('Dalej').click();
+  cy.overridePaymentRedirectUrl();
+  cy.contains('Kupuje i płacę').click();
+  cy.wait('@addOrder');
+});
+
 Cypress.Commands.add('goToPromotedProductsPage', () => {
   cy.get('img[alt="Budoman logo"]').click();
 });
@@ -98,6 +113,15 @@ Cypress.Commands.add('trackRequest', ({ operationName, aliasName = operationName
   cy.intercept('POST', '/graphql', (req) => {
     if (req.body.operationName === operationName) {
       req.alias = aliasName;
+    }
+  });
+});
+
+Cypress.Commands.add('mockRequest', ({ operationName, responseData, aliasName = operationName, statusCode = 200 } = {}) => {
+  cy.intercept('POST', '/graphql', (req) => {
+    if (req.body.operationName === operationName) {
+      req.alias = aliasName;
+      req.reply({ statusCode, body: { data: responseData } });
     }
   });
 });

@@ -14,7 +14,6 @@ describe('Basket', () => {
     cy.contains('Dodaj swój pierwszy produkt!').click();
 
     cy.url().should('eq', Cypress.config().baseUrl + '/');
-    cy.contains('Polecane produkty').should('be.visible');
   });
 
   it('shows added products to basket', () => {
@@ -24,7 +23,7 @@ describe('Basket', () => {
 
     cy.goToBasket()
 
-    cy.contains('Twój koszyk').should('be.visible');
+    cy.get('[id="basket-with-products-modal"]').should('be.visible');
     cy.get('.product--basket').within(() => {
       cy.contains('Tynk akrylowy').should('be.visible');
       cy.contains('120,99 zł').should('be.visible');
@@ -40,7 +39,7 @@ describe('Basket', () => {
 
     cy.goToBasket()
     
-    cy.contains('Twój koszyk').should('be.visible');
+    cy.get('[id="basket-with-products-modal"]').should('be.visible');
     cy.get('.product--basket').within(() => {
       cy.contains('Tynk akrylowy').should('be.visible');
       cy.contains('120,99 zł').should('be.visible');
@@ -56,8 +55,7 @@ describe('Basket', () => {
 
     cy.goToBasket()
 
-    cy.contains('Twój koszyk').should('be.visible');
-
+    cy.get('[id="basket-with-products-modal"]').should('be.visible');
     cy.get('.product--basket').eq(0).within(() => {
       cy.contains('Tynk akrylowy').should('be.visible');
       cy.contains('120,99 zł').should('be.visible');

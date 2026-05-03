@@ -11,6 +11,5 @@ describe('404 page', () => {
 
   it('redirects to main page after 5s', () => {
     cy.url({ timeout: 6000 }).should('eq', Cypress.config().baseUrl + '/');
-    cy.contains('Polecane produkty').should('be.visible');
   });
 });

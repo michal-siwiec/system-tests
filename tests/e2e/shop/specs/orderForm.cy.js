@@ -198,19 +198,19 @@ describe('Order form', () => {
 
         cy.get("tr.summary__row").eq(1).within(() => {
           cy.contains('Tynk akrylowy').should('be.visible');
-          cy.contains('120.99 zł').should('be.visible');
+          cy.contains('120,99 zł').should('be.visible');
           cy.contains('1').should('be.visible');
         });
 
         cy.get("tr.summary__row").eq(2).within(() => {
           cy.contains('Grunt głęboko penetrujący').should('be.visible');
-          cy.contains('174.99 zł').should('be.visible');
+          cy.contains('174,99 zł').should('be.visible');
           cy.contains('4').should('be.visible');
         });
 
         cy.get("tr.summary__row").eq(3).within(() => {
           cy.contains('Suma całkowita').should('be.visible');
-          cy.contains('820.95 zł').should('be.visible');
+          cy.contains('820,95 zł').should('be.visible');
         });
       });
     });

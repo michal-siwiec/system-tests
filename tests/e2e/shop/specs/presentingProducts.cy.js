@@ -36,7 +36,7 @@ describe('Presenting producs', () => {
 
   it("shows only products from category 'stairway'", () => {
     selectSpecifiedGroupOfProducts('Schody');
-    testContentPresence(['Segment przesuwny', 'Listwa wykończeniowa Fakro', 'Kątowniki montażowe do schodów strychowych', 'Schody strychowe']);
+    testContentPresence(['Segment przesuwny', 'Listwa wykończeniowa Fakro', 'Kątowniki montażowe do schodów strychowych', 'Schody strychowe']);
   });
 
   it("shows only products from category 'roofZone'", () => {

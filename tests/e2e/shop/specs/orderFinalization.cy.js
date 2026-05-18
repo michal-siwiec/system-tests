@@ -34,14 +34,16 @@ describe('Order finalization', () => {
       cy.contains('Pobierz fakturę w formacie PDF').should('be.visible');
     });
 
-    it('fetchs invoice from S3 after clicking invoice button', () => {
+    it("fetchs order's invoice", () => {
       cy.visit(`/thank-you-page?order_id=${orderId}`);
       cy.wait('@getOrder');
 
-      cy.intercept('GET', '**/users/**/invoices/**.pdf').as('getInvoiceRequest');
+      cy.trackRequest({ operationName: 'InvoicePdf', aliasName: 'getInvoiceRequest' });
       cy.contains('Pobierz fakturę w formacie PDF').trigger('mousedown');
+
       cy.wait('@getInvoiceRequest').then(({ request }) => {
-        expect(request.url).to.match(/\/users\/[0-9a-f-]+\/invoices\/[0-9a-f-]+\.pdf/i);
+        expect(request.body.operationName).to.eq('InvoicePdf');
+        expect(request.body.variables.orderId).to.eq(orderId);
       });
     });
   });

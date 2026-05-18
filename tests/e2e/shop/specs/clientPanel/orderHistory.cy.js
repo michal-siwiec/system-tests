@@ -62,7 +62,7 @@ describe('Order history', () => {
 
     cy.get("table.history__table tr").eq(1).within(() => {
       cy.contains(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i).should('be.visible');
-      cy.contains('776.93 zł').should('be.visible');
+      cy.contains('955.64 zł').should('be.visible');
       cy.contains(/\d{1,2}[./]\d{1,2}[./]\d{4}, \d{1,2}:\d{2}:\d{2}( AM| PM)?/).should('be.visible');
     });
   });

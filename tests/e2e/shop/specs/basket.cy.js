@@ -4,7 +4,7 @@ describe('Basket', () => {
   });
 
   it('shows empty basket', () => {
-    cy.contains('0.00 zł').should('be.visible');
+    cy.contains('0,00 zł').should('be.visible');
 
     cy.goToBasket()
 
@@ -19,14 +19,14 @@ describe('Basket', () => {
   it('shows added products to basket', () => {
     cy.addProductToBasket({ productName: 'Tynk akrylowy', quantity: '5' });
 
-    cy.contains('604.95 zł').should('be.visible');
+    cy.contains('744,10 zł').should('be.visible');
 
     cy.goToBasket()
 
     cy.get('[id="basket-with-products-modal"]').should('be.visible');
     cy.get('.product--basket').within(() => {
       cy.contains('Tynk akrylowy').should('be.visible');
-      cy.contains('120,99 zł').should('be.visible');
+      cy.contains('148,82 zł').should('be.visible');
       cy.get('input[type="number"]').should('have.value', '5').and('be.disabled');
     });
   });
@@ -35,14 +35,14 @@ describe('Basket', () => {
     cy.addProductToBasket({ productName: 'Tynk akrylowy', quantity: '1' });
     cy.addProductToBasket({ productName: 'Tynk akrylowy', quantity: '2' });
 
-    cy.contains('362.97 zł').should('be.visible');
+    cy.contains('446,46 zł').should('be.visible');
 
     cy.goToBasket()
     
     cy.get('[id="basket-with-products-modal"]').should('be.visible');
     cy.get('.product--basket').within(() => {
       cy.contains('Tynk akrylowy').should('be.visible');
-      cy.contains('120,99 zł').should('be.visible');
+      cy.contains('148,82 zł').should('be.visible');
       cy.get('input[type="number"]').should('have.value', '3').and('be.disabled');
     });
   });
@@ -51,14 +51,14 @@ describe('Basket', () => {
     cy.addProductToBasket({ productName: 'Tynk akrylowy', quantity: '1' });
     cy.addProductToBasket({ productName: 'Grunt głęboko penetrujący', quantity: '4' });
 
-    cy.contains('820.95 zł').should('be.visible');
+    cy.contains('1009,78 zł').should('be.visible');
 
     cy.goToBasket()
 
     cy.get('[id="basket-with-products-modal"]').should('be.visible');
     cy.get('.product--basket').eq(0).within(() => {
       cy.contains('Tynk akrylowy').should('be.visible');
-      cy.contains('120,99 zł').should('be.visible');
+      cy.contains('148,82 zł').should('be.visible');
       cy.get('input[type="number"]').should('have.value', '1').and('be.disabled');
     });
 
@@ -66,7 +66,7 @@ describe('Basket', () => {
 
     cy.get('.product--basket').eq(1).within(() => {
       cy.contains('Grunt głęboko penetrujący').should('be.visible');
-      cy.contains('174,99 zł').should('be.visible');
+      cy.contains('215,24 zł').should('be.visible');
       cy.get('input[type="number"]').should('have.value', '4').and('be.disabled');
     });
   });

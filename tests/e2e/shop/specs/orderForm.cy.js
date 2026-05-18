@@ -124,7 +124,7 @@ describe('Order form', () => {
         cy.get('[placeholder="Kod pocztowy"]').should('not.exist');
         cy.get('[placeholder="Adres email"]').should('not.exist');
         cy.get('[placeholder="Numer telefonu"]').should('not.exist');
-        cy.contains('Inpost (10,99 zł)').should('be.visible');
+        cy.contains('Inpost (13,52 zł)').should('be.visible');
       });
     });
   });
@@ -141,8 +141,8 @@ describe('Order form', () => {
     });
 
     it('renders proper content and selects DPD option', () => {
-      cy.contains('Inpost (10,99 zł)').should('exist');
-      cy.contains('DPD (15,99 zł)').should('exist');
+      cy.contains('Inpost (13,52 zł)').should('exist');
+      cy.contains('DPD (19,67 zł)').should('exist');
       cy.contains('Odbiór w punkcie (0,00 zł)').should('exist');
 
       cy.get('[data-testid="inpost-checkbox"]').should('be.checked');
@@ -192,26 +192,33 @@ describe('Order form', () => {
       cy.get('.summary').within(() => {
         cy.get("tr.summary__row").eq(0).within(() => {
           cy.contains('Nazwa').should('be.visible');
-          cy.contains('Cena').should('be.visible');
+          cy.contains('Cena netto').should('be.visible');
+          cy.contains('VAT').should('be.visible');
           cy.contains('Ilość').should('be.visible');
         });
 
         cy.get("tr.summary__row").eq(1).within(() => {
           cy.contains('Tynk akrylowy').should('be.visible');
           cy.contains('120,99 zł').should('be.visible');
+          cy.contains('27,83 zł').should('be.visible');
           cy.contains('1').should('be.visible');
         });
 
         cy.get("tr.summary__row").eq(2).within(() => {
           cy.contains('Grunt głęboko penetrujący').should('be.visible');
           cy.contains('174,99 zł').should('be.visible');
+          cy.contains('40,25 zł').should('be.visible');
           cy.contains('4').should('be.visible');
         });
 
         cy.get("tr.summary__row").eq(3).within(() => {
-          cy.contains('Suma całkowita').should('be.visible');
-          cy.contains('820,95 zł').should('be.visible');
+          cy.contains('Dostawa: Inpost').should('be.visible');
+          cy.contains('10,99 zł').should('be.visible');
+          cy.contains('2,53 zł').should('be.visible');
         });
+
+        cy.contains('Razem do zapłaty:').should('be.visible');
+        cy.contains('1023,30 zł').should('be.visible');
       });
     });
 

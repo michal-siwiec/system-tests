@@ -27,6 +27,8 @@ on:
         required: true
       BUDOMAN_BACKEND_STRIPE_SECRET_KEY:
         required: true
+      BUDOMAN_BACKEND_STRIPE_WEBHOOK_SIGNING_SECRET:
+        required: true
       BUDOMAN_BACKEND_INFAKT_API_KEY:
         required: true
 jobs:
@@ -65,6 +67,7 @@ jobs:
           SIDEKIQ_PANEL_LOGIN=${{ secrets.BUDOMAN_BACKEND_SIDEKIQ_PANEL_LOGIN }}
           SIDEKIQ_PANEL_PASSWORD=${{ secrets.BUDOMAN_BACKEND_SIDEKIQ_PANEL_PASSWORD }}
           STRIPE_SECRET_KEY=${{ secrets.BUDOMAN_BACKEND_STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SIGNING_SECRET=${{ secrets.BUDOMAN_BACKEND_STRIPE_WEBHOOK_SIGNING_SECRET }}
           INFAKT_API_KEY=${{ secrets.BUDOMAN_BACKEND_INFAKT_API_KEY }}
           RAILS_ENV=test
           EOF

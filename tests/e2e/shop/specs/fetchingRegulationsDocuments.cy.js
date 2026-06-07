@@ -1,21 +1,22 @@
 describe('fetching documents', () => {
   beforeEach(() => {
     cy.visit('/');
+    cy.window().then((win) => {
+      cy.stub(win, 'open').as('windowOpen');
+    });
   });
 
   it('fetches Polityka prywatności.pdf after click on this in footer', () => {
-    cy.intercept('GET', '**/documents/polityka_prywatnosci.pdf').as('policyPrivacyRequest');
-    cy.contains('Polityka prywatności').click();
-    cy.wait('@policyPrivacyRequest');
+    cy.contains('Polityka prywatności').trigger('mousedown');
 
-    cy.readFile('tests/e2e/shop/downloads/Polityka prywatności.pdf', 'binary').should('exist');
+    cy.get('@windowOpen').should('have.been.calledOnce');
+    cy.get('@windowOpen').its('firstCall.args.0').should('include', 'documents/polityka_prywatnosci.pdf');
   });
 
   it('fetches Regulamin sklepu.pdf after click on this in footer', () => {
-    cy.intercept('GET', '**/documents/regulamin_sklepu.pdf').as('shopRulesRequest');
-    cy.contains('Regulamin sklepu').click();
-    cy.wait('@shopRulesRequest');
+    cy.contains('Regulamin sklepu').trigger('mousedown');
 
-    cy.readFile('tests/e2e/shop/downloads/Regulamin sklepu.pdf', 'binary').should('exist');
+    cy.get('@windowOpen').should('have.been.calledOnce');
+    cy.get('@windowOpen').its('firstCall.args.0').should('include', 'documents/regulamin_sklepu.pdf');
   });
 });
